@@ -4,6 +4,8 @@ import Task from '@/lib/models/Task'
 import { connectDB } from '@/lib/db'
 import jwt from 'jsonwebtoken'
 
+// * POST /api/tasks
+
 const postSchema = z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -50,6 +52,32 @@ export async function POST(request) {
     } catch (err) {
         return NextResponse.json(
             { error: 'Internal server error.' },
+            { status: 500 }
+        )
+    }
+}
+
+// * GET /api/tasks
+export async function GET(request) {
+    try {
+        // ! verify token
+        const token = request.cookies.get('accessToken')?.value
+        if (!token) {
+            return NextResponse.json(
+                { message: 'No token provided.' },
+                { status: 401 }
+            )
+        }
+
+        // * token is provided -> decode
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const userId = decoded.id
+
+        const task = await Task.find({ userId })
+        return NextResponse.json(task)
+    } catch (err) {
+        return NextResponse.json(
+            { error: err.message },
             { status: 500 }
         )
     }
