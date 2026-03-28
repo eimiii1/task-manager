@@ -24,7 +24,7 @@ const Dashboard = () => {
 
     return (
         <div>
-            
+            ads
         </div>
     )
 }
