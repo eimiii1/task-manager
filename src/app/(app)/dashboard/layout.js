@@ -1,7 +1,7 @@
 export const metadata = {
-    title: 'Dashboard | Noto',
+    title: 'Dashboard | Noto.'
 }
 
-export default function DashboardLayout({children}) {
+export default function DashboardLayout({ children }) {
     return children
 }

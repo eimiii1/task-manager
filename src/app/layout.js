@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/custom/Sidebar";
+import { Sidebar } from "@/components/custom/sidebar";
+import { MobileHeader } from "@/components/custom/mobile";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Noto",
+  title: "Noto.",
   description: "Organize your tasks, track progress, and stay productive every day.",
 };
 
@@ -23,11 +24,12 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex">
-        <Sidebar />
-        <main>
-          {children}
-        </main>
+      <body className="min-h-full flex flex-col md:flex-row relative">
+          <MobileHeader />
+          <Sidebar />
+          <main>
+            {children}
+          </main>
       </body>
     </html>
   );

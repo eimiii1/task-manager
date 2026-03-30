@@ -1,45 +1,36 @@
 'use client'
+import { Loading } from "@/components/custom/loading"
 import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
-import { motion } from 'framer-motion'
-import { Loader2 } from "lucide-react"
+import { useEffect, useState } from "react"
 
-const Dashboard = () => {
-    const [user, setUser] = useState(null)
-    const [isAuthorized, setIsAuthorized] = useState(false)
+export default function Dashboard() {
     const router = useRouter()
+    const [error, setError] = useState(null)
+    const [user, setUser] = useState(null)
 
     useEffect(() => {
         const checkAuthorization = async () => {
-            try {
-                const response = await fetch('/api/auth/check')
-                if (!response.ok) {
-                    router.push('/login')
-                    return
-                }
-
-                const data = await response.json()
-                setUser(data.user)
-                setIsAuthorized(true)
-            } catch {
+            const response = await fetch(['/api/auth/check'])
+            if (!response.ok) {
+                const error = await response.json()
+                setError(error.message)
                 router.push('/login')
             }
+            const data = await response.json()
+            setUser(data.user)
+            setError(null)
         }
-        checkAuthorization()
-    }, [router])
-    
-    if (!isAuthorized) return <Loader2 className="animate-spin" />
 
+        checkAuthorization()
+    }, [])
+    
+    if (!user) {
+        return <Loading />
+    }
+    
     return (
-        <>
-            <motion.div
-                className='relative flex'
-            >
-                <div>
-                </div>
-            </motion.div>
-        </>
+        <div>
+            asd
+        </div>
     )
 }
-
-export default Dashboard

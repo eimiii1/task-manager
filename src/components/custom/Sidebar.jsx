@@ -1,195 +1,160 @@
 'use client'
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { ChevronDown } from "lucide-react"
-import { Loader2 } from "lucide-react"
-import { Home } from "lucide-react"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { useState, useEffect } from 'react'
+import { Logo } from './logo'
+import { LayoutDashboard } from 'lucide-react'
+import { Check } from 'lucide-react'
+import { Separator } from '../ui/separator'
+import { usePathname } from 'next/navigation'
+import { Button } from '../ui/button'
+import { useRouter } from 'next/navigation'
+import { Settings } from 'lucide-react'
+import { LogOut } from 'lucide-react'
+import { CircleUserRound } from 'lucide-react'
+import { Bell } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { LayoutDashboard } from "lucide-react"
-import { FolderCheck } from "lucide-react"
-import { Separator } from "../ui/separator"
-import { LogOut } from "lucide-react"
-import { UserRoundPlus } from "lucide-react"
-import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context"
-import { SidebarIcon } from "lucide-react"
 
-const Sidebar = () => {
-    const pathname = usePathname()
-    const router = useRouter()
-    const [isToggled, setIsToggled] = useState(false)
+export function Sidebar() {
     const [user, setUser] = useState(null)
-    const [error, setError] = useState(null)
-    const [userToggled, setUserToggled] = useState(false)
-    const [isMobile, setIsMobile] = useState(false)
+    const [isToggled, setIsToggled] = useState(false)
+    const router = useRouter()
 
     useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await fetch('/api/auth/check')
-                if (!response.ok) {
-                    const error = await response.json()
-                    throw new Error(error.message)
-                }
-
-                const data = await response.json()
-                setUser(data.user)
-                setError(null)
-            } catch (err) {
-                setError(err.message)
-            }
-        }
-        fetchUser()
+        fetch('/api/auth/check')
+            .then(res => res.json())
+            .then(data => setUser(data.user))
     }, [])
 
     const handleLogout = async () => {
         try {
             await fetch('/api/auth/logout', { method: 'POST' })
             router.push('/login')
-        } catch (err) {
-            setError(err.message)
+        } catch {
+            router.push('/login')
         }
     }
 
-
-    if (pathname === '/login' || pathname === '/register' || pathname === '/') {
-        return null
-    }
-
-
-    if (!user) {
-        return (
-            <div className="w-screen h-screen flex flex-col gap-4 justify-center items-center">
-                <span className="text-5xl flex subpixel-antialiased gap-1 justify-center items-center">
-                    Noto
-                    <span className="block w-3 h-3 rounded-full bg-[#43d870] subpixel-antialiased mt-auto"></span>
-                </span>
-                <Loader2 className="animate-spin" />
+    return (
+        <motion.div
+            className='hidden md:flex flex-col justify-between w-65 h-screen border overflow-hidden'
+            initial={{width: '0px'}}
+            animate={{width: '250px'}}
+            transition={{
+                type: 'spring',
+                stiffness: 500,
+                damping: 50
+            }}
+        >
+            <div>
+                <header
+                    className='w-full flex justify-center h-fit p-5 relative'
+                >
+                    <Logo />
+                </header>
+                <Separator />
+                <Menu />
             </div>
-        )
+            <Separator className='mt-auto' />
+            <NavFooter
+                className='p-5 flex gap-3 justify-between'
+            >
+                <NavFooterItem
+                    variant='destructive'
+                    onClick={handleLogout}
+                    className='flex justify-center items-center'
+                    size='icon'
+                >
+                    <LogOut className='rotate-180' />
+                </NavFooterItem>
+                <NavFooterItem
+                    className="flex justify-center items-center"
+                    variant='outline'
+                    size='icon'
+                >
+                    <Settings />
+                </NavFooterItem>
+                <NavFooterItem
+                    className="flex justify-center items-center"
+                    variant='outline'
+                    size='icon'
+                >
+                    <CircleUserRound />
+                </NavFooterItem>
+                <NavFooterItem
+                    className="flex justify-center items-center"
+                    variant='outline'
+                    size='icon'
+                >
+                    <Bell />
+                </NavFooterItem>
+            </NavFooter>
+        </motion.div>
+    )
+}
+
+function Menu() {
+    const menu = {
+        title: 'MENU',
+        navigations: [
+            { icon: <LayoutDashboard size={20} className='text-primary/50' />, name: 'Dashboard', path: '/dashboard' },
+            { icon: <Check size={20} className='text-primary/50' />, name: 'Tasks', path: '/tasks' }
+        ]
     }
 
     return (
         <div
+            className='p-5 flex flex-col gap-4'
         >
-            <motion.div
-                onClick={() => setIsToggled(prev => !prev)}
-                className={`flex flex-col gap-1 absolute top-0 left-0 p-5 ${isToggled ? 'z-60' : 'z-0'}`}
-                animate={isToggled ? { x: 200 } : { x: 0 }}
-                transition={{
-                    type: 'spring',
-                    stiffness: 300,
-                    damping: 30
-                }}
+            <h1 className='font-semibold text-xs opacity-40'>
+                {menu.title}
+            </h1>
+            <ul
+                className='flex flex-col gap-2'
             >
-                <motion.span
-                    animate={isToggled ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }}
-                    transition={{
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 30
-                    }}
-                    className="block h-0.5 w-5 bg-primary/60 rounded-2xl"
-                />
-                <motion.span
-                    animate={isToggled ? { rotate: -45, y: -2 } : { rotate: 0, y: 0 }}
-                    transition={{
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 30
-                    }}
-                    className="block h-0.5 w-5 bg-primary/60 rounded-2xl"
-                />
-            </motion.div>
-            {/* Overlay background */}
-            <motion.div
-                className="fixed h-screen w-screen bg-primary/10 -z-10"
-                animate={{
-                    opacity: isToggled ? 1 : 0
-                }}
-            />
-
-            <motion.div
-                className={`flex flex-col gap-5 overflow-auto h-screen border shadow-xs bg-secondary ${isToggled ? 'z-50' : 'z-0'}`}
-                initial={{ width: isToggled ? '15.925em' : '0px' }}
-                animate={{ width: isToggled ? '15.925em' : '0px' }}
-                transition={{
-                    type: 'spring',
-                    stiffness: 300,
-                    damping: 30
-                }}
-            >
-                <header
-                    className="p-3"
-                >
-                    <Button
-                        className="flex gap-1 border-0 relative"
-                        variant="secondary"
-                        onClick={() => setUserToggled(prev => !prev)}
-                    >
-                        {user.username}
-                        <ChevronDown className="w-3"
-                        />
-                    </Button>
-                    <div
-                        className={`absolute top-15 left-5 flex-col shadow-md gap-3 bg-secondary rounded-md w-65 z-60 p-3 border justify-center items-center ${!isToggled && 'opacity-0'} ${userToggled ? 'flex' : 'hidden'}`}
-                    >
-                        <Button
-                            variant="secondary"
-                            className="flex w-full gap-2 justify-start"
-                        >
-                            <UserRoundPlus className="w-4 opacity-50" />
-                            <span className="opacity-50 text-sm">Create new account</span>
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            className="flex w-full gap-2 justify-start"
-                            onClick={handleLogout}
-                        >
-                            <LogOut className="w-4 opacity-50" />
-                            <span className="opacity-50 text-sm">Sign out</span>
-                        </Button>
-                    </div>
-                </header>
-                <div className="p-5 flex flex-col gap-2">
-                    <Link
-                        href='/login'
-                    >
-                        <Button
-                            className='w-full flex justify-start items-center gap-2'
-                            variant="secondary"
-                        >
-                            <Home className="opacity-60 w-4" />
-                            Home
-                        </Button>
-                    </Link>
-                    <Link
-                        href='/dashboard'
-                    >
-                        <Button
-                            className={`w-full flex justify-start items-center gap-2 ${pathname === '/dashboard' && 'bg-[#43d870] text-white'}`}
-                            variant="secondary"
-                        >
-                            <LayoutDashboard className="opacity-60 w-4" />
-                            Dashboard
-                        </Button>
-                    </Link>
-                    <Link
-                        href='/tasks'
-                    >
-                        <Button
-                            className={`w-full flex justify-start items-center gap-2 ${pathname === '/tasks' && 'bg-[#43d870] text-white'}`}
-                            variant="secondary"
-                        >
-                            <FolderCheck className="opacity-60 w-4" />
-                            My Tasks
-                        </Button>
-                    </Link>
-                </div>
-            </motion.div>
+                {menu.navigations.map(item => (
+                    <NavItem key={item.name} icon={item.icon} name={item.name} path={item.path} />
+                ))}
+            </ul>
         </div>
     )
 }
 
-export default Sidebar
+function NavItem({ icon, name, path }) {
+    const pathname = usePathname()
+    const router = useRouter()
+
+    return (
+        <Button
+            className={`flex justify-start`}
+            variant={pathname === path ? 'secondary' : 'ghost'}
+            onClick={() => router.push(path)}
+        >
+            {icon}
+            <span
+                className='font-semibold opacity-50 text-[0.85rem]'
+            >
+                {name}
+            </span>
+        </Button>
+    )
+}
+
+function NavFooter({ children, className }) {
+    return (
+        <div className={className}>
+            {children}
+        </div>
+    )
+}
+
+function NavFooterItem({ children, variant, onClick, className, size }) {
+    return (
+        <Button
+            variant={variant}
+            className={className}
+            onClick={onClick}
+            size={size}
+        >
+            {children}
+        </Button>
+    )
+}
