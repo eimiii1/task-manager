@@ -10,24 +10,26 @@ export default function Dashboard() {
 
     useEffect(() => {
         const checkAuthorization = async () => {
-            const response = await fetch(['/api/auth/check'])
-            if (!response.ok) {
-                const error = await response.json()
-                setError(error.message)
+            try {
+                const response = await fetch('/api/auth/check')
+                if (!response.ok) {
+                    router.push('/login')
+                }
+                const data = await response.json()
+                setUser(data.user)
+                setError(null)
+            } catch {
                 router.push('/login')
             }
-            const data = await response.json()
-            setUser(data.user)
-            setError(null)
         }
 
         checkAuthorization()
     }, [])
-    
+
     if (!user) {
         return <Loading />
     }
-    
+
     return (
         <div>
             asd

@@ -14,13 +14,19 @@ import { Bell } from 'lucide-react'
 export function MobileHeader({ children }) {
     const [isToggled, setIsToggled] = useState(false)
     const router = useRouter()
+    const pathname = usePathname()
+
+    if (pathname === '/login' || pathname === 'register') {
+        return null
+    }
+    
     return (
         <div className='flex flex-col justify-start relative md:hidden'>
             <div className='relative border-b flex justify-between items-center p-5 md:hidden z-0'>
                 <Burger isToggled={isToggled} setIsToggled={setIsToggled} />
                 <Logo />
             </div>
-            <MobileSidebar isToggled={isToggled} router={router} />
+            <MobileSidebar isToggled={isToggled} router={router} pathname={pathname} />
         </div>
     )
 }
@@ -50,9 +56,17 @@ function Burger({ isToggled, setIsToggled }) {
     )
 }
 
-function MobileSidebar({ isToggled, router }) {
-    const pathname = usePathname()
-
+function MobileSidebar({ isToggled, router, pathname }) {
+    const [error, setError] = useState(null)
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', {method: 'POST'})
+            router.push('/login')
+        } catch {
+            router.push('/login')
+        }
+    }
+    
     const menu = {
         title: 'MENU',
         navigations: [
@@ -67,7 +81,7 @@ function MobileSidebar({ isToggled, router }) {
             { icon: <Bell className='text-primary/50' />, name: 'Notifications', path: '/notifications', variant: 'outline' },
             { icon: <Settings className='text-primary/50' />, name: 'Settings', path: '/settings', variant: 'outline' },
             { icon: <CircleUserRound className='text-primary/50' />, name: 'Profile', path: '/profile', variant: 'outline' },
-            { icon: <LogOut className='text-primary/50' />, name: 'Sign out', path: '/logout', variant: 'destructive' },
+            { icon: <LogOut className='text-primary/50' />, name: 'Sign out', path: '/login', variant: 'destructive' },
         ]
     }
 
@@ -124,6 +138,7 @@ function MobileSidebar({ isToggled, router }) {
                             key={item.name}
                             className='w-full flex justify-start'
                             variant={item.variant}
+                            onClick={handleLogout}
                         >
                             {item.icon}
                             <span
