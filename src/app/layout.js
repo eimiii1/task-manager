@@ -24,12 +24,10 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col md:flex-row relative">
-          <MobileHeader />
-          <Sidebar />
-          <main>
-            {children}
-          </main>
+      <body className="min-h-full flex flex-col md:flex-row flex-1">
+        <MobileHeader />
+        <Sidebar />
+        {children}
       </body>
     </html>
   );

@@ -12,10 +12,10 @@ export async function GET(request) {
         }
 
         // * if token is provided -> verify
-       const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
         return NextResponse.json(
-            { message: 'Authorized', user: decoded},
+            { message: 'Authorized', user: decoded },
             { status: 200 }
         )
     } catch {

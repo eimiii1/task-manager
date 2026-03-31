@@ -17,6 +17,7 @@ export function Sidebar() {
     const [user, setUser] = useState(null)
     const [isToggled, setIsToggled] = useState(false)
     const router = useRouter()
+    const pathname = usePathname()
 
     useEffect(() => {
         fetch('/api/auth/check')
@@ -32,10 +33,14 @@ export function Sidebar() {
             router.push('/login')
         }
     }
+    
+    if (pathname === '/login' || pathname === '/register') {
+        return null
+    }
 
     return (
         <motion.div
-            className='hidden md:flex flex-col justify-between w-65 h-screen border overflow-hidden'
+        className='hidden md:flex flex-col justify-between h-screen overflow-hidden relative'
             initial={{width: '0px'}}
             animate={{width: '250px'}}
             transition={{
@@ -50,7 +55,6 @@ export function Sidebar() {
                 >
                     <Logo />
                 </header>
-                <Separator />
                 <Menu />
             </div>
             <Separator className='mt-auto' />
@@ -125,12 +129,12 @@ function NavItem({ icon, name, path }) {
     return (
         <Button
             className={`flex justify-start`}
-            variant={pathname === path ? 'secondary' : 'ghost'}
+            variant={pathname === path ? 'active' : 'ghost'}
             onClick={() => router.push(path)}
         >
             {icon}
             <span
-                className='font-semibold opacity-50 text-[0.85rem]'
+                className={`block font-semibold text-[0.85rem] ${pathname === path && 'opacity-100'}`}
             >
                 {name}
             </span>
