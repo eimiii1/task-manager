@@ -5,6 +5,7 @@ import { UserData } from "@/components/custom/user"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { motion } from 'framer-motion'
+import { ActivitySquare } from "lucide-react"
 
 export default function Dashboard() {
     const router = useRouter()
@@ -77,34 +78,71 @@ function DashboardContent({ user }) {
     function TaskTabs() {
         const [activeTab, setActiveTab] = useState('inProgress')
         const tabs = [
-            { name: 'In Progress', state: 'inProgress' },
-            { name: 'Completed', state: 'completed' }
+            { name: 'In Progress', state: 'inProgress', task: <InProgressTasks /> },
+            { name: 'Completed', state: 'completed', task: <CompletedTasks /> }
         ]
         return (
             <div
-                className='flex gap-4 p-5 bg-white rounded-xl'
+            className="flex flex-col gap-10"
             >
-                {tabs.map(tab => (
-                    <motion.span
-                        whileTap={{scale: 0.95}}
-                        key={tab.name}
-                        className={`opacity-50 font-semibold text-sm cursor-pointer select-none ${activeTab === tab.state && 'text-blue-500 opacity-100'}`}
-                        onClick={() => setActiveTab(tab.state)}
-                    >
-                        {tab.name}
-                    </motion.span>
-                ))}
+                <div
+                    className='flex justify-center md:justify-start gap-4 p-5 bg-white rounded-xl'
+                >
+                    {tabs.map(tab => (
+                        <motion.span
+                            whileTap={{ scale: 0.95 }}
+                            key={tab.name}
+                            className={`opacity-50 font-semibold text-sm cursor-pointer select-none ${activeTab === tab.state && 'text-blue-500 opacity-100'}`}
+                            onClick={() => setActiveTab(tab.state)}
+                        >
+                            {tab.name}
+                        </motion.span>
+                    ))}
+                </div>
+                <div
+                className="p-5 border"
+                >
+                    {activeTab === tabs[0].state && tabs[0].task}
+                    {activeTab === tabs[1].state && tabs[1].task}
+                </div>
             </div>
         )
     }
 
     function InProgressTasks() {
         const [tasks, setTasks] = useState(null)
-        
-        return
+        const [error, setError] = useState(null)
+        useEffect(() => {
+            const fetchTasks = async () => {
+                try {
+                    const response = await fetch('api/tasks')
+                    if (!response.ok) {
+                        const error = await response.json()
+                        setError(err.message)
+                    }
+
+                    const data = await response.json()
+                    setTasks(data.task)
+                    setError(null)
+                } catch (err) {
+                    setError(err.message)
+                }
+            }
+            fetchTasks()
+        }, [])
+
+        return (
+            <>
+                {tasks.map(task => (
+                    <div>
+                    asd
+                    </div>
+                ))}
+            </>
+        )
     }
 
     function CompletedTasks() {
-        return
+        return "gago"
     }
 }
