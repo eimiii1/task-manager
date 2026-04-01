@@ -3,9 +3,10 @@ import { Loading } from "@/components/custom/loading"
 import { SearchBar } from "@/components/custom/searhbar"
 import { UserData } from "@/components/custom/user"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { motion } from 'framer-motion'
 import { ActivitySquare } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 export default function Dashboard() {
     const router = useRouter()
@@ -55,7 +56,7 @@ function DashboardHeader({ user }) {
 function DashboardContent({ user }) {
     return (
         <div
-            className="w-full h-screen bg-secondary p-5"
+            className="w-full h-screen bg-secondary p-5 overflow-y-scroll"
         >
             <div
                 className="block text-xl font-bold text-shadow-2xs p-5 rounded-xl"
@@ -83,7 +84,7 @@ function DashboardContent({ user }) {
         ]
         return (
             <div
-            className="flex flex-col gap-10"
+                className="flex flex-col gap-10"
             >
                 <div
                     className='flex justify-center md:justify-start gap-4 p-5 bg-white rounded-xl'
@@ -100,7 +101,7 @@ function DashboardContent({ user }) {
                     ))}
                 </div>
                 <div
-                className="p-5 border"
+                    className="p-5 grid grid-cols-1 lg:grid-cols-5 gap-4"
                 >
                     {activeTab === tabs[0].state && tabs[0].task}
                     {activeTab === tabs[1].state && tabs[1].task}
@@ -112,18 +113,20 @@ function DashboardContent({ user }) {
     function InProgressTasks() {
         const [tasks, setTasks] = useState(null)
         const [error, setError] = useState(null)
+
         useEffect(() => {
             const fetchTasks = async () => {
                 try {
-                    const response = await fetch('api/tasks')
+                    const response = await fetch('/api/tasks')
                     if (!response.ok) {
                         const error = await response.json()
-                        setError(err.message)
+                        setError(error.message)
                     }
 
                     const data = await response.json()
-                    setTasks(data.task)
+                    setTasks(data)
                     setError(null)
+                    console.log(data)
                 } catch (err) {
                     setError(err.message)
                 }
@@ -133,11 +136,33 @@ function DashboardContent({ user }) {
 
         return (
             <>
-                {tasks.map(task => (
-                    <div>
-                    asd
-                    </div>
-                ))}
+                {tasks && (
+                    <>
+                        {tasks.map(task => (
+                            !task.completed && (
+                                <div
+                                    key={task._id}
+                                    className="shadow-sm p-5 flex flex-col h-75 gap-5 relative rounded-xl"
+                                >
+                                    <Badge
+                                        variant="default"
+                                        className='flex justify-center items-center'
+                                    >
+                                        {new Date(task.createdAt)?.toLocaleDateString()}
+                                    </Badge>
+                                    <div className=''>
+                                        <h1 className="text-xl truncate md:truncate font-medium wrap-break-word">
+                                            {task.title}
+                                        </h1>
+                                        <p className="opacity-50 text-sm font-medium wrap-break-word truncate md:truncate">
+                                            {task.description}
+                                        </p>
+                                    </div>
+                                </div>
+                            )
+                        ))}
+                    </>
+                )}
             </>
         )
     }
