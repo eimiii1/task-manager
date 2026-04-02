@@ -60,6 +60,7 @@ export async function POST(request) {
 // * GET /api/tasks
 export async function GET(request) {
     try {
+        await connectDB()
         // ! verify token
         const token = request.cookies.get('accessToken')?.value
         if (!token) {
@@ -76,8 +77,9 @@ export async function GET(request) {
         const task = await Task.find({ userId })
         return NextResponse.json(task)
     } catch (err) {
+        console.log(err.message)
         return NextResponse.json(
-            { error: err.message },
+            { message: err.message },
             { status: 500 }
         )
     }

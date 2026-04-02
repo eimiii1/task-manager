@@ -34,7 +34,7 @@ export function Sidebar() {
         }
     }
     
-    if (pathname === '/login' || pathname === '/register') {
+    if (pathname === '/login' || pathname === '/register' || pathname === '/') {
         return null
     }
 
@@ -100,7 +100,6 @@ function Menu() {
         title: 'MENU',
         navigations: [
             { icon: <LayoutDashboard size={20} className='text-primary/50' />, name: 'Dashboard', path: '/dashboard' },
-            { icon: <Check size={20} className='text-primary/50' />, name: 'Tasks', path: '/tasks' }
         ]
     }
 
@@ -134,7 +133,7 @@ function NavItem({ icon, name, path }) {
         >
             {icon}
             <span
-                className={`block font-semibold text-[0.85rem] ${pathname === path && 'opacity-100'}`}
+                className={`block font-medium text-[0.85rem] ${pathname === path && 'opacity-100'}`}
             >
                 {name}
             </span>
