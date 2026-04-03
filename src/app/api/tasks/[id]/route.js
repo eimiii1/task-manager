@@ -51,7 +51,7 @@ export async function GET(request, { params }) {
 
 // * PUT /api/tasks/[id]
 const putSchema = z.object({
-    title: z.string(),
+    title: z.string().optional(),
     description: z.string().optional(),
     completed: z.boolean().optional()
 })

@@ -111,13 +111,21 @@ function DashboardContent({ user }) {
 
                     const data = await response.json()
                     setTasks(data)
-                    console.log(data)
                 } catch (err) {
                     setError('Error:', err.message)
                 }
             }
             fetchTasks()
         }, [])
+
+        const handleDelete = async (taskId) => {
+            try {
+                setTasks(tasks.filter(t => t._id !== taskId))
+                const response = await fetch(`/api/tasks/${taskId}`, {method: 'DELETE'})
+            } catch (err) {
+                setError(err.message)
+            }
+        }
 
         return (
             <div
@@ -151,14 +159,22 @@ function DashboardContent({ user }) {
                                     <p className='opacity-70 text-xs max-w-full max-h-full truncate'>{task.description}</p>
                                 </div>
                                 <Separator />
-                                <Button
-                                    className='bg-blue-500 hover:bg-blue-400 shadow-md'
-                                    asChild
-                                >
-                                    <Link href={`/tasks/${task._id}`}>
-                                        Edit
-                                    </Link>
-                                </Button>
+                                <div className="flex justify-start items-center gap-2">
+                                    <Button
+                                        className='bg-blue-500 hover:bg-blue-400 shadow-md'
+                                        asChild
+                                    >
+                                        <Link href={`/tasks/${task._id}`}>
+                                            Edit
+                                        </Link>
+                                    </Button>
+                                    <Button
+                                        variant='destructive'
+                                        onClick={() => handleDelete(task._id)}
+                                    >
+                                        Delete
+                                    </Button>
+                                </div>
                             </motion.div>
                         ))}
                     </>
